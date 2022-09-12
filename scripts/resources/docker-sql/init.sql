@@ -9,13 +9,21 @@ SET FOREIGN_KEY_CHECKS=0
 /* Create Database xface_sysgtem */
 CREATE DATABASE IF NOT EXISTS xface_system;
 use xface_system;
-/* Drop Tables */
-
-DROP TABLE IF EXISTS `enterprise` CASCADE
-;
+/* Create Account Tables */
+DROP TABLE IF EXISTS `account` CASCADE;
+CREATE TABLE `account`
+(
+	`username` VARCHAR(100) NOT NULL,
+	`password` VARCHAR(250) NOT NULL,
+	`email` VARCHAR(100) NULL,
+	`cellphone` VARCHAR(15) NULL,
+	`note` TEXT NULL,
+    `is_root` BOOL NOT NULL DEFAULT false,
+	CONSTRAINT `PK_Account` PRIMARY KEY (`username` ASC)
+);
 
 /* Create Tables */
-
+DROP TABLE IF EXISTS `enterprise` CASCADE;
 CREATE TABLE `enterprise`
 (
 	`id` INT NOT NULL AUTO_INCREMENT,

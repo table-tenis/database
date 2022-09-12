@@ -1,0 +1,4 @@
+scripts/var
+scripts/mariadb_container_info*
+database-service/venv
+*swp*

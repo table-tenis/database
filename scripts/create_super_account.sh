@@ -8,8 +8,12 @@ printf "Enter DB_PASSWORD:"
 read -s DB_PASSWORD
 printf "\nEnter DB_HOST:" 
 read DB_HOST
+printf "Enter DB_PORT:" 
+read DB_PORT
+printf "Enter DB_NAME:" 
+read DB_NAME
 
-echo "<<<<<<<<< CREATE ROOT ACCOUNT >>>>>>>>>>"
+echo "========== CREATE ROOT ACCOUNT =========="
 echo "Supply These Infomations"
 printf "Enter username:" 
 read USERNAME
@@ -32,8 +36,7 @@ read CELLPHONE
 printf "Enter something note:" 
 read NOTE
 
-# sql command
-echo "Add a root account into database"
+# python script for hashing password using argon2
 HASH_PASSWD="$(value=$PASSWORD python3 - <<END
 import argon2
 import os
@@ -49,9 +52,15 @@ print(hash_passwd)
 END
 )"
 
+if [ -z "$HASH_PASSWD" ]; then
+  echo "python script execute hashing password fail"
+  exit 1
+fi
 # run sql insert command
-mysql --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST xface << EOF
+mysql --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST --port=$DB_PORT $DB_NAME << EOF
 INSERT INTO account \
  (\`username\`, \`password\`, \`email\`, \`cellphone\`, \`note\`, \`is_root\`) \
 VALUES ("$USERNAME", "$HASH_PASSWD", "$EMAIL", "$CELLPHONE", "$NOTE", True);
 EOF
+
+echo "Added a super account into database"
