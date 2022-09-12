@@ -1,13 +1,18 @@
 version: '3.5'
+
+volumes:
+    persistent:
+
 services:
   mariadb:
-    image: mariadb
+    image: mariadb:10.8.2
     container_name: mariadb_xface
     hostname: mariadb_xface
     ports:
-      - "3309:3306"
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - ./var/lib/mysql:/var/lib/mysql
+      - persistent:/var/lib/mysql
+      - ./config/10-custom.cnf:/etc/mysql/mariadb.conf.d/10-custom.cnf
       - ./resources/docker-sql/init.sql:/docker-entrypoint-initdb.d/init.sql
