@@ -4,7 +4,6 @@ from datetime import date, datetime
 import sys, os
 dir = os.path.dirname(__file__)
 sys.path.insert(0, os.path.abspath(os.path.join(dir, '.')))
-import mariadb
 
 URL = 'http://172.21.100.254:8080'
 
