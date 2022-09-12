@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   mariadb:
-    image: mariadb:10.9
+    image: mariadb
     container_name: mariadb_xface
     hostname: mariadb_xface
     ports:
