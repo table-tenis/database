@@ -143,23 +143,23 @@ ALTER TABLE `site_io_register`
 	FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`) ON DELETE No Action ON UPDATE No Action;
 
 /* Create Session_Service Tables */
-DROP TABLE IF EXISTS `session_service` CASCADE;
-CREATE TABLE `session_service`
-(
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`site_id` INT NOT NULL,
-	`type` VARCHAR(100) NOT NULL,
-	`is_registered` BOOL NOT NULL DEFAULT false,
-	`name` VARCHAR(100) NULL,
-	`state` INT NOT NULL DEFAULT 0,
-	`start_time` DATETIME NOT NULL,
-	`description` TEXT NULL,
-	CONSTRAINT `PK_Session_Service` PRIMARY KEY (`id` ASC)
-);
-/* Create Foreign Key Constraints */
-ALTER TABLE `session_service` 
- ADD CONSTRAINT `FK_Session_Service_Site`
-	FOREIGN KEY (`site_id`) REFERENCES `site` (`id`) ON DELETE Cascade ON UPDATE Cascade;
+-- DROP TABLE IF EXISTS `session_service` CASCADE;
+-- CREATE TABLE `session_service`
+-- (
+-- 	`id` INT NOT NULL AUTO_INCREMENT,
+-- 	`site_id` INT NOT NULL,
+-- 	`type` VARCHAR(100) NOT NULL,
+-- 	`is_registered` BOOL NOT NULL DEFAULT false,
+-- 	`name` VARCHAR(100) NULL,
+-- 	`state` INT NOT NULL DEFAULT 0,
+-- 	`start_time` DATETIME NOT NULL,
+-- 	`description` TEXT NULL,
+-- 	CONSTRAINT `PK_Session_Service` PRIMARY KEY (`id` ASC)
+-- );
+-- /* Create Foreign Key Constraints */
+-- ALTER TABLE `session_service` 
+--  ADD CONSTRAINT `FK_Session_Service_Site`
+-- 	FOREIGN KEY (`site_id`) REFERENCES `site` (`id`) ON DELETE Cascade ON UPDATE Cascade;
 
 /* Create Camera Tables */
 DROP TABLE IF EXISTS `camera` CASCADE;
@@ -171,12 +171,14 @@ CREATE TABLE `camera`
 	`ip` VARCHAR(20) NOT NULL,
 	`name` VARCHAR(100) NULL,
 	`description` TEXT NULL,
+	`rtsp_uri` TEXT NULL,
+	`stream` TEXT NULL,
 	CONSTRAINT `PK_Camera` PRIMARY KEY (`id` ASC)
 );
 /* Create Foreign Key Constraints */
-ALTER TABLE `camera` 
- ADD CONSTRAINT `FK_Camera_Session_Service`
-	FOREIGN KEY (`session_service_id`) REFERENCES `session_service` (`id`) ON DELETE No Action ON UPDATE No Action;
+-- ALTER TABLE `camera` 
+--  ADD CONSTRAINT `FK_Camera_Session_Service`
+-- 	FOREIGN KEY (`session_service_id`) REFERENCES `session_service` (`id`) ON DELETE No Action ON UPDATE No Action;
 
 ALTER TABLE `camera` 
  ADD CONSTRAINT `FK_Camera_Site`
@@ -206,7 +208,7 @@ CREATE TABLE `detection`
 	`id` BIGINT NOT NULL AUTO_INCREMENT,
 	`staff_id` INT NOT NULL,
 	`cam_id` INT NOT NULL,
-	`session_id` INT NOT NULL,
+	`session_id` INT NULL,
 	`frame_id` DOUBLE(10,2) NOT NULL,
 	`detection_time` DATETIME NOT NULL,
 	`detection_score` FLOAT(0,0) NOT NULL,
@@ -235,7 +237,7 @@ CREATE TABLE `mot`
 (
 	`id` BIGINT NOT NULL AUTO_INCREMENT,
 	`cam_id` INT NOT NULL,
-	`session_id` INT NOT NULL,
+	`session_id` INT NULL,
 	`frame_id` INT NOT NULL,
 	`track_time` DATETIME NOT NULL,
 	`track_id` INT NOT NULL,
