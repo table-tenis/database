@@ -22,6 +22,23 @@ CREATE TABLE `account`
 	CONSTRAINT `PK_Account` PRIMARY KEY (`username` ASC)
 );
 
+/* Create ACL Tables */
+DROP TABLE IF EXISTS `acl` CASCADE;
+CREATE TABLE `acl`
+(
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`username` VARCHAR(100) NOT NULL,
+	`tag_type` VARCHAR(200) NOT NULL,
+	`tag_qualifier` VARCHAR(50) NULL,
+	`permissions` VARCHAR(20) NOT NULL,
+	CONSTRAINT `PK_Account` PRIMARY KEY (`id` ASC)
+);
+/* Create Foreign Key Constraints acl -> account */
+ALTER TABLE `acl` 
+ ADD CONSTRAINT `FK_acl_account`
+	FOREIGN KEY (`username`) REFERENCES `account` (`username`) ON DELETE Cascade ON UPDATE Cascade;
+
+
 /* Create Tables */
 DROP TABLE IF EXISTS `enterprise` CASCADE;
 CREATE TABLE `enterprise`
