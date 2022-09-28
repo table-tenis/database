@@ -113,7 +113,7 @@ slave_net_timeout = 3000
 ### **Securing connections for client and server in mariadb**
 - Document reference [securing-connections](https://mariadb.com/kb/en/securing-connections-for-client-and-server/#requiring-tls)
 
-<img src="images/Picture3.jpg" width = "800" height="356">
+<img src="images/Picture4.jpg" width = "800" height="356">
 
 *figure 4: securing using Transport Layer Security(TLS) in mariadb*
 

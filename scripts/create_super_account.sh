@@ -37,7 +37,7 @@ printf "Enter something note:"
 read NOTE
 
 # python script for hashing password using argon2
-HASH_PASSWD="$(value=$PASSWORD python3 - <<END
+HASH_PASSWD="$(value=$PASSWORD python - <<END
 import argon2
 import os
 argon2Hasher = argon2.PasswordHasher(

@@ -15,7 +15,7 @@ import sqlalchemy
 from sqlalchemy import create_engine, Integer, String, Column
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import select
-engine = create_engine("mariadb+mariadbconnector://xface_client:admin@127.0.0.1:3309/xface_system?charset=utf8", echo=True)
+engine = create_engine("mariadb+mariadbconnector://root:root@172.21.100.174:3306/xface_system?charset=utf8", echo=True)
 print(engine.connect())
 
 Base = declarative_base(engine)
@@ -50,17 +50,17 @@ class SiteIORegister(Base):
     __tablename__ = 'site_io_register'
     __table_args__ = {'autoload': True}
     
-class SessionService(Base):
-    __tablename__ = 'session_service'
-    __table_args__ = {'autoload': True}
+# class SessionService(Base):
+#     __tablename__ = 'session_service'
+#     __table_args__ = {'autoload': True}
     
 class Camera(Base):
     __tablename__ = 'camera'
     __table_args__ = {'autoload': True}
 
-class RestrictedROI(Base):
-    __tablename__ = 'restricted_roi'
-    __table_args__ = {'autoload': True}
+# class RestrictedROI(Base):
+#     __tablename__ = 'restricted_roi'
+#     __table_args__ = {'autoload': True}
 
 class Detection(Base):
     __tablename__ = 'detection'
@@ -91,11 +91,14 @@ def dump_staff_data():
     df = df.where(pd.notnull(df), None)
     list_staff = []
     for idx in df.index:
+        state = 1
+        if df['activate'][idx] == False:
+            state = 0
         list_staff.append({'enterprise_id':1, 'staff_code':df['staff_code'][idx], 'fullname':df['full_name'][idx],
                            'email_code':df['mail_code'][idx], 'cellphone':df['cellphone'][idx], 'unit':df['unit'][idx],
                            'title':df['title'][idx], 'date_of_birth':df['date_of_birth'][idx],
                            'sex': df['sex'][idx], 'note':df['note'][idx],
-                           'notify_enable':df['should_diemdanh'][idx], 'state':1})
+                           'notify_enable':df['should_diemdanh'][idx], 'state':state})
     SESSION.execute(Staff.__table__.insert(), list_staff)
     SESSION.commit()
     
@@ -144,8 +147,8 @@ def get_staff():
         print(staff[0].id, staff[0].staff_code, staff[0].fullname)
 
 if __name__ == "__main__":
-    dump_enterprise_data()
+    # dump_enterprise_data()
     dump_staff_data()
-    dump_site_data()
-    dump_session_service_data()
-    dump_camera_data()
+    # dump_site_data()
+    # dump_session_service_data()
+    # dump_camera_data()
