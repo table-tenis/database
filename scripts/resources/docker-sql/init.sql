@@ -4,9 +4,9 @@
 /*  DBMS       : MySql 						*/
 /* ---------------------------------------------------- */
 
-SET FOREIGN_KEY_CHECKS=0
-; 
+-- SET FOREIGN_KEY_CHECKS=0; 
 /* Create Database xface_sysgtem */
+-- drop database if EXISTS xface_system;
 CREATE DATABASE IF NOT EXISTS xface_system;
 use xface_system;
 /* Create Account Tables */
@@ -57,7 +57,6 @@ DROP TABLE IF EXISTS `staff` CASCADE
 CREATE TABLE `staff`
 (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`enterprise_id` INT NULL,
 	`staff_code` VARCHAR(20) NULL,
 	`email_code` VARCHAR(100) NULL,
 	`unit` VARCHAR(300) NULL,
@@ -72,10 +71,6 @@ CREATE TABLE `staff`
 	`note` TEXT NULL,
 	CONSTRAINT `PK_Staff` PRIMARY KEY (`id` ASC)
 );
-/* Create Foreign Key Constraints */
-ALTER TABLE `staff` 
- ADD CONSTRAINT `FK_Staff_Enterprise`
-	FOREIGN KEY (`enterprise_id`) REFERENCES `enterprise` (`id`) ON DELETE Cascade ON UPDATE Cascade;
 
 /* Create FaceID Tables */
 DROP TABLE IF EXISTS `faceid` CASCADE
@@ -127,16 +122,11 @@ DROP TABLE IF EXISTS `site` CASCADE;
 CREATE TABLE `site`
 (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`enterprise_id` INT NOT NULL,
 	`name` VARCHAR(200) NULL,
 	`description` TEXT NULL COMMENT 'ote',
 	`note` TEXT NULL,
 	CONSTRAINT `PK_Site` PRIMARY KEY (`id` ASC)
 );
-/* Create Foreign Key Constraints */
-ALTER TABLE `site` 
- ADD CONSTRAINT `FK_Site_Enterprise`
-	FOREIGN KEY (`enterprise_id`) REFERENCES `enterprise` (`id`) ON DELETE Cascade ON UPDATE Cascade;
 
 /* Create Site_IO_Register Tables */
 DROP TABLE IF EXISTS `site_io_register` CASCADE;
@@ -183,7 +173,7 @@ DROP TABLE IF EXISTS `camera` CASCADE;
 CREATE TABLE `camera`
 (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`site_id` INT NOT NULL,
+	`site_id` INT NULL,
 	`session_service_id` INT NULL,
 	`ip` VARCHAR(20) NOT NULL,
 	`name` VARCHAR(100) NULL,
@@ -197,9 +187,9 @@ CREATE TABLE `camera`
 --  ADD CONSTRAINT `FK_Camera_Session_Service`
 -- 	FOREIGN KEY (`session_service_id`) REFERENCES `session_service` (`id`) ON DELETE No Action ON UPDATE No Action;
 
-ALTER TABLE `camera` 
- ADD CONSTRAINT `FK_Camera_Site`
-	FOREIGN KEY (`site_id`) REFERENCES `site` (`id`) ON DELETE Cascade ON UPDATE Cascade;
+-- ALTER TABLE `camera` 
+--  ADD CONSTRAINT `FK_Camera_Site`
+-- 	FOREIGN KEY (`site_id`) REFERENCES `site` (`id`) ON DELETE Cascade ON UPDATE Cascade;
 
 /* Create Restricted_ROI Tables */
 DROP TABLE IF EXISTS `restricted_roi` CASCADE;

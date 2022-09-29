@@ -94,7 +94,7 @@ def dump_staff_data():
         state = 1
         if df['activate'][idx] == False:
             state = 0
-        list_staff.append({'enterprise_id':1, 'staff_code':df['staff_code'][idx], 'fullname':df['full_name'][idx],
+        list_staff.append({'staff_code':df['staff_code'][idx], 'fullname':df['full_name'][idx],
                            'email_code':df['mail_code'][idx], 'cellphone':df['cellphone'][idx], 'unit':df['unit'][idx],
                            'title':df['title'][idx], 'date_of_birth':df['date_of_birth'][idx],
                            'sex': df['sex'][idx], 'note':df['note'][idx],

@@ -1,3 +1,8 @@
 [mysqld]
-
 bind-address = 0.0.0.0
+log_bin=/var/log/mysql/mariadb-bin
+binlog_format = row
+auto_increment_offset=1
+wait_timeout = 172800
+interactive_timeout = 172800
+max_allowed_packet = 524288000
