@@ -47,9 +47,16 @@ CREATE TABLE `enterprise`
 	`enterprise_code` VARCHAR(100) NULL,
 	`name` VARCHAR(100) NULL,
 	`email` VARCHAR(100) NULL,
+	`about` TEXT NULL,
+	`address` TEXT NULL,
+	`phone` TEXT NULL,
+	`official_page` TEXT NULL,
 	`note` TEXT NULL,
 	CONSTRAINT `PK_Enterprise` PRIMARY KEY (`id` ASC)
 );
+
+/* Insert into enterprise*/
+insert into `enterprise` (`enterprise_code`, `name`, `email`, `about`, `address`, `phone`, `official_page`) values ('vtx', 'Viettel Aerospace Institute/Viện Hàng không Vũ trụ Viettel', 'vtx.hr@viettel.com.vn','Viện Hàng không Vũ trụ Viettel (VTX) - trực thuộc Tập đoàn Viễn thông Quân đội, là đơn vị nghiên cứu, thiết kế, sản xuất các sản phẩm thuộc lĩnh vực hàng không vũ trụ. Viện được thành lập từ năm 2015 với mục tiêu đánh thức sức mạnh, đưa Việt Nam trở thành một trong các quốc gia chinh phục được lĩnh vực hàng không vũ trụ.', 'Toà nhà Viettel 20 Tầng, Khu CNC Hoà Lạc, Thạch Thất, Hà Nội Hanoi, Vietnam 100000', '046.281.6666', 'https://www.facebook.com/ViettelX');
 
 /* Create Staff Table */
 DROP TABLE IF EXISTS `staff` CASCADE
@@ -174,7 +181,6 @@ CREATE TABLE `camera`
 (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`site_id` INT NULL,
-	`session_service_id` INT NULL,
 	`ip` VARCHAR(20) NOT NULL,
 	`name` VARCHAR(100) NULL,
 	`description` TEXT NULL,
@@ -215,9 +221,9 @@ CREATE TABLE `detection`
 	`id` BIGINT NOT NULL AUTO_INCREMENT,
 	`staff_id` INT NOT NULL,
 	`cam_id` INT NOT NULL,
-	`session_id` INT NULL,
-	`frame_id` DOUBLE(10,2) NOT NULL,
-	`detection_time` DATETIME NOT NULL,
+	`session_id` VARCHAR(300) NULL,
+	`frame_id` BIGINT NOT NULL,
+	`detection_time` DATETIME(3) NOT NULL,
 	`detection_score` FLOAT(0,0) NOT NULL,
 	`blur_score` FLOAT(0,0) NULL,
 	`box_x` FLOAT(0,0) NOT NULL,
@@ -226,7 +232,7 @@ CREATE TABLE `detection`
 	`box_height` FLOAT(0,0) NOT NULL,
 	`has_mask` BOOL NULL,
 	`has_pose` BOOL NULL,
-	`feature` VARBINARY(512) NULL,
+	`feature` TEXT NULL,
 	CONSTRAINT `PK_Detection` PRIMARY KEY (`id` ASC)
 );
 /* Create Foreign Key Constraints */
@@ -237,6 +243,8 @@ ALTER TABLE `detection`
 ALTER TABLE `detection` 
  ADD CONSTRAINT `FK_Detection_Staff`
 	FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`) ON DELETE No Action ON UPDATE No Action;
+/* Create detection time index for detection table */
+alter table detection add index Detection_Time (detection_time);
 
 /* Create MOT Tables */
 DROP TABLE IF EXISTS `mot` CASCADE;
@@ -244,9 +252,9 @@ CREATE TABLE `mot`
 (
 	`id` BIGINT NOT NULL AUTO_INCREMENT,
 	`cam_id` INT NOT NULL,
-	`session_id` INT NULL,
-	`frame_id` INT NOT NULL,
-	`track_time` DATETIME NOT NULL,
+	`session_id` VARCHAR(300) NULL,
+	`frame_id` BIGINT NOT NULL,
+	`track_time` DATETIME(3) NOT NULL,
 	`track_id` INT NOT NULL,
 	`box_x` FLOAT(0,0) NOT NULL,
 	`box_y` FLOAT(0,0) NOT NULL,
