@@ -233,6 +233,7 @@ CREATE TABLE `detection`
 	`has_mask` BOOL NULL,
 	`has_pose` BOOL NULL,
 	`feature` TEXT NULL,
+	`uri_image` VARCHAR(200) NULL,
 	CONSTRAINT `PK_Detection` PRIMARY KEY (`id` ASC)
 );
 /* Create Foreign Key Constraints */
