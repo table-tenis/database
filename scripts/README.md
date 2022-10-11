@@ -7,9 +7,17 @@ docker and docker-compose
 ```
 ```
 ## **How To Run**
-- Run a MariaDB container.
+- Run a MariaDB with adminer ui.
 ```
-docker-compose up -d
+docker-compose -f docker-compose-mariadb.yml up -d
+```
+- Run a MongoDB with mongo express ui.
+```
+docker-compose -f docker-compose-mongodb.yml up -d
+```
+- Run a Redis with redis commander ui.
+```
+docker-compose -f docker-compose-redis.yml up -d
 ```
 - Get Mariadb container ip, port biding informations to mariadb_container_info.conf file.
 ```

@@ -1,0 +1,35 @@
+version: "3.5"
+
+volumes:
+  mongo-data:
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    # environment:
+    #   - MONGO_INITDB_ROOT_USERNAME=root
+    #   - MONGO_INITDB_ROOT_PASSWORD=root
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - type: volume
+        source: mongodb_data
+        target: /data/db
+  mongo-express:
+    image: mongo-express
+    container_name: mexpress
+    environment:
+      # - ME_CONFIG_MONGODB_AUTH_USERNAME=root
+      # - ME_CONFIG_MONGODB_AUTH_PASSWORD=root
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      # - ME_CONFIG_MONGODB_URL=mongodb://root:root@mongo:27017/?authSource=admin
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=Qdt@2022
+    links:
+      - mongo
+    restart: always
+    ports:
+      - "8085:8081"

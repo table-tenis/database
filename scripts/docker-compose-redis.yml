@@ -1,0 +1,41 @@
+version: '3.5'
+
+volumes:
+  redis-data
+services:
+  redis:
+    image: redis:6.2-alpine
+    container_name: redis
+    restart: always
+    volumes:
+      - type: volume
+        source: redis-data
+        target: /var/lib/redis
+      # - ./redis-data/redis-server.log:/var/log/redis/redis-server.log
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+    command: > 
+      redis-server 
+      --requirepass root
+      --bind 0.0.0.0
+      --save ""
+      --appendonly no
+      --dir /var/lib/redis
+      --maxmemory 2048M
+      --maxmemory-policy volatile-ttl
+    links: 
+      - redis-commander
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    restart: always
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=root
+      - HTTP_USER=admin
+      - HTTP_PASSWORD=Qdt@2022
+    ports:
+      - 8084:8081
