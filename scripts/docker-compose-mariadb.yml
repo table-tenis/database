@@ -17,6 +17,12 @@ services:
         target: /var/lib/mysql
       - ./config/10-custom.cnf:/etc/mysql/mariadb.conf.d/10-custom.cnf
       - ./resources/docker-sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: test: mysqladmin ping -u root --password=root
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 10s
 
   adminer:
     image: adminer:latest

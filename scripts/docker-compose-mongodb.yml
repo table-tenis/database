@@ -17,6 +17,13 @@ services:
       - type: volume
         source: mongodb_data
         target: /data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/local --quiet
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
   mongo-express:
     image: mongo-express
     container_name: mexpress

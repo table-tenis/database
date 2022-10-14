@@ -27,6 +27,12 @@ services:
       --maxmemory-policy volatile-ttl
     links: 
       - redis-commander
+    healthcheck:
+      test: redis-cli -a "root" ping
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 10s
 
   redis-commander:
     image: rediscommander/redis-commander:latest
