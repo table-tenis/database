@@ -15,7 +15,7 @@ import sqlalchemy
 from sqlalchemy import create_engine, Integer, String, Column
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import select
-engine = create_engine("mariadb+mariadbconnector://root:root@172.21.100.174:3306/xface_system?charset=utf8", echo=True)
+engine = create_engine("mariadb+mariadbconnector://root:root@172.21.100.167:3306/xface_system?charset=utf8", echo=True)
 print(engine.connect())
 
 Base = declarative_base(engine)

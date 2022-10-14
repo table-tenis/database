@@ -22,6 +22,9 @@ CREATE TABLE `account`
 	CONSTRAINT `PK_Account` PRIMARY KEY (`username` ASC)
 );
 
+/* Insert into account table*/
+insert into `account` (`username`, `password`, `email`, `cellphone`, `note`, `is_root`) values ('root', '$argon2id$v=19$m=65536,t=3,p=1$fkrnJ5pEaFLswsYR5y5PsA$Rx4Hvw+yFzU5s5rjBedPGN6pLR3aq/ZkFTAEUibivHk', 'root@root', '0965397777', 'root is super account', true);
+
 /* Create ACL Tables */
 DROP TABLE IF EXISTS `acl` CASCADE;
 CREATE TABLE `acl`
