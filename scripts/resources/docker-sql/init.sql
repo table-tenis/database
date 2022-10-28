@@ -159,25 +159,6 @@ ALTER TABLE `site_io_register`
  ADD CONSTRAINT `FK_Site_IO_Register_Staff`
 	FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`) ON DELETE No Action ON UPDATE No Action;
 
-/* Create Session_Service Tables */
--- DROP TABLE IF EXISTS `session_service` CASCADE;
--- CREATE TABLE `session_service`
--- (
--- 	`id` INT NOT NULL AUTO_INCREMENT,
--- 	`site_id` INT NOT NULL,
--- 	`type` VARCHAR(100) NOT NULL,
--- 	`is_registered` BOOL NOT NULL DEFAULT false,
--- 	`name` VARCHAR(100) NULL,
--- 	`state` INT NOT NULL DEFAULT 0,
--- 	`start_time` DATETIME NOT NULL,
--- 	`description` TEXT NULL,
--- 	CONSTRAINT `PK_Session_Service` PRIMARY KEY (`id` ASC)
--- );
--- /* Create Foreign Key Constraints */
--- ALTER TABLE `session_service` 
---  ADD CONSTRAINT `FK_Session_Service_Site`
--- 	FOREIGN KEY (`site_id`) REFERENCES `site` (`id`) ON DELETE Cascade ON UPDATE Cascade;
-
 /* Create Camera Tables */
 DROP TABLE IF EXISTS `camera` CASCADE;
 CREATE TABLE `camera`
@@ -192,10 +173,6 @@ CREATE TABLE `camera`
 	CONSTRAINT `PK_Camera` PRIMARY KEY (`id` ASC)
 );
 /* Create Foreign Key Constraints */
--- ALTER TABLE `camera` 
---  ADD CONSTRAINT `FK_Camera_Session_Service`
--- 	FOREIGN KEY (`session_service_id`) REFERENCES `session_service` (`id`) ON DELETE No Action ON UPDATE No Action;
-
 -- ALTER TABLE `camera` 
 --  ADD CONSTRAINT `FK_Camera_Site`
 -- 	FOREIGN KEY (`site_id`) REFERENCES `site` (`id`) ON DELETE Cascade ON UPDATE Cascade;
@@ -250,6 +227,35 @@ ALTER TABLE `detection`
 /* Create detection time index for detection table */
 alter table detection add index Detection_Time (detection_time);
 
+/* Create Detection_Tmp Tables */
+DROP TABLE IF EXISTS `detection_tmp` CASCADE;
+CREATE TABLE `detection_tmp`
+(
+	`id` BIGINT NOT NULL DEFAULT 0,
+	`staff_id` INT NOT NULL,
+	`cam_id` INT NOT NULL,
+	`session_id` VARCHAR(300) NULL,
+	`frame_id` BIGINT NOT NULL,
+	`detection_time` DATETIME(3) NOT NULL,
+	`detection_score` FLOAT(0,0) NOT NULL,
+	`blur_score` FLOAT(0,0) NULL,
+	`box_x` FLOAT(0,0) NOT NULL,
+	`box_y` FLOAT(0,0) NOT NULL,
+	`box_width` FLOAT(0,0) NOT NULL,
+	`box_height` FLOAT(0,0) NOT NULL,
+	`has_mask` BOOL NULL,
+	`has_pose` BOOL NULL,
+	`feature` TEXT NULL,
+	`uri_image` VARCHAR(200) NULL,
+	CONSTRAINT `PK_Detection_Tmp` PRIMARY KEY (`id` ASC)
+);
+/* Create detection time index for detection_tmp table */
+alter table detection_tmp add index Detection_Time (detection_time);
+
+-- ALTER TABLE `detection_tmp` 
+--  ADD CONSTRAINT `FK_Detection_Tmp_Staff`
+-- 	FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`) ON DELETE No Action ON UPDATE No Action;
+
 /* Create MOT Tables */
 DROP TABLE IF EXISTS `mot` CASCADE;
 CREATE TABLE `mot`
@@ -271,7 +277,7 @@ ALTER TABLE `mot`
  ADD CONSTRAINT `FK_MOT_Camera`
 	FOREIGN KEY (`cam_id`) REFERENCES `camera` (`id`) ON DELETE No Action ON UPDATE No Action;
 
-/* Create MTaD Tables */
+/* Create MTaD Table */
 DROP TABLE IF EXISTS `mtar` CASCADE;
 CREATE TABLE `mtar`
 (
@@ -279,6 +285,69 @@ CREATE TABLE `mtar`
 	`mot_id` BIGINT NOT NULL,
 	CONSTRAINT `PK_MTaD` PRIMARY KEY (`detection_id` ASC, `mot_id` ASC)
 );
+
+/* Create Report Table */
+DROP TABLE IF EXISTS `report` CASCADE
+;
+CREATE TABLE `report`
+(
+	`id` BIGINT NOT NULL AUTO_INCREMENT,
+    `staff_id` INT NULL,
+	`checkin` datetime(3) NULL,
+	`checkout` datetime(3) NULL,
+    `report_date` date NULL,
+	CONSTRAINT `PK_Report` PRIMARY KEY (`id` ASC)
+);
+/* Create report_date index for report table */
+alter table report add index Report_Date (report_date);
+
+ALTER TABLE `report` 
+ ADD CONSTRAINT `FK_Report_Staff`
+	FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`) ON DELETE No Action ON UPDATE No Action;
+
+/* Create Aggregate Report View */
+create function start_time() returns datetime(3) DETERMINISTIC NO SQL return @start_time;
+create function end_time() returns datetime(3) DETERMINISTIC NO SQL return @end_time;
+
+create view aggregate_report as 
+select staff.id as staff_id, staff.staff_code, staff.email_code, staff.fullname, staff.unit, staff.title, staff.nickname, staff.cellphone, staff.date_of_birth, staff.sex, staff.state, staff.notify_enable, staff.note,  b.min_time as checkin, b.max_time as checkout  
+from staff  
+left outer join (select staff_id, Min(detection_time) as min_time, Max(detection_time) as max_time 
+     from detection_tmp where (detection_time >= start_time()) and (detection_time <= end_time()) group by staff_id) as b  
+on staff.id = b.staff_id  where staff.state != 0;
+
+/* Create Insert Detection Tmp Event */
+create event `insert_newest_detection_tmp` 
+on schedule every 10 minute 
+starts current_timestamp + interval 5 minute 
+do insert into detection_tmp select * from detection 
+where id > (select max(id) from detection_tmp) or ((select max(id) from detection_tmp ) is null);
+
+/* Create Insert Report Event */
+create  event `insert_report` 
+on schedule every 1 day 
+starts current_date + interval '23:50' hour_minute 
+do insert into report (staff_id, checkin, checkout, report_date) 
+select r.staff_id, r.checkin, r.checkout, current_date 
+from (select @start_time:=curdate() p1) param1, (select @end_time:=(current_date + interval '23:50' hour_minute) p2) param2, aggregate_report as r;
+
+/* Create Delete Detection Event */
+create event `delete_detection` 
+on schedule every 1 day 
+starts current_timestamp + interval 5 minute 
+do delete from detection where detection_time < date_sub(now(), interval 90 day);
+
+/* Create Delete Detection Tmp Event */
+create event `delete_detection_tmp` 
+on schedule every 1 hour 
+starts current_timestamp + interval 5 minute 
+do delete from detection_tmp where detection_time < date_sub(now(), interval 2 day);
+
+/* Create MOT Event */
+create event `delete_mot` 
+on schedule every 1 day 
+starts current_timestamp + interval 5 minute 
+do delete from mot where track_time < date_sub(now(), interval 90 day);
 
 SET FOREIGN_KEY_CHECKS=1
 ; 

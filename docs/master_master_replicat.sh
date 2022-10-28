@@ -140,3 +140,6 @@ sudo systemctl restart mariadb
 sudo nano /etc/mysql/mariadb.conf.d/50-client.cnf
 # add these lines in the Security Features part
 ssl
+
+# Create event to delete detect records after expire 2 days time
+create event if not exists delete_detect on schedule every 5 minute starts current_timestamp do delete from detection where detection_time < date_sub(now(), interval 2 day);
